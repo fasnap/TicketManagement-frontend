@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { Lock } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { login } from "../../api/auth";
 
 function UserLogin() {
@@ -39,7 +39,7 @@ function UserLogin() {
     try {
       const result = await dispatch(login({ username, password })).unwrap();
       if (result?.access) {
-        navigate("/user/dashboard"); // Redirect only if login is successful
+        navigate("/"); // Redirect only if login is successful
       }
     } catch (err) {
       setErrors({ form: err?.error || "Invalid username or password" });
@@ -48,58 +48,79 @@ function UserLogin() {
 
   return (
     <div>
-      <Container maxWidth="sm">
-        <Paper
-          elevation={3}
-          sx={{ padding: 4, marginTop: 10, textAlign: "center" }}
-        >
-          <Lock fontSize="large" color="primary" />
-          <Typography variant="h5" gutterBottom>
-            Login
-          </Typography>
-          {error && <Typography color="error">{error.message}</Typography>}
-
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "gray",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <Container maxWidth="sm">
+          <Paper
+            elevation={5}
+            sx={{
+              padding: 5,
+              textAlign: "center",
+              borderRadius: 3,
+              backdropFilter: "blur(8px)",
+              backgroundColor: "rgba(255, 255, 255, 0.8)",
+            }}
           >
-            <TextField
-              label="Username"
-              name="username"
-              value={username}
-              variant="outlined"
-              fullWidth
-              error={!!errors.username}
-              helperText={errors.username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-            <TextField
-              label="Password"
-              name="password"
-              value={password}
-              type="password"
-              variant="outlined"
-              fullWidth
-              error={!!errors.password}
-              helperText={errors.password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              disabled={loading}
-              fullWidth
+            <Lock fontSize="large" color="primary" />
+            <Typography variant="h5" gutterBottom>
+              User Login
+            </Typography>
+            {error && <Typography color="error">{error.message}</Typography>}
+
+            <Box
+              component="form"
+              onSubmit={handleSubmit}
+              sx={{ display: "flex", flexDirection: "column", gap: 2 }}
             >
-              {loading ? "Logging in..." : "Login"}
-            </Button>
-            {errors.form && (
-              <Typography color="error">{errors.form}</Typography>
-            )}
-          </Box>
-        </Paper>
-      </Container>
+              <TextField
+                label="Username"
+                name="username"
+                value={username}
+                variant="outlined"
+                fullWidth
+                error={!!errors.username}
+                helperText={errors.username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+              <TextField
+                label="Password"
+                name="password"
+                value={password}
+                type="password"
+                variant="outlined"
+                fullWidth
+                error={!!errors.password}
+                helperText={errors.password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                disabled={loading}
+                fullWidth
+              >
+                {loading ? "Logging in..." : "Login"}
+              </Button>
+              <Typography gutterBottom>
+                Don't have an account?  <Link to="/user/register">here</Link>.
+              </Typography>
+              {errors.form && (
+                <Typography color="error">{errors.form}</Typography>
+              )}
+            </Box>
+          </Paper>
+        </Container>
+      </Box>
     </div>
   );
 }

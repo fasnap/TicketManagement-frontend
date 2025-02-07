@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { Error, Lock } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { login, register } from "../../api/auth";
 
 function UserRegister() {
@@ -86,72 +86,93 @@ function UserRegister() {
   };
   return (
     <div>
-      <Container maxWidth="sm">
-        <Paper
-          elevation={3}
-          sx={{ padding: 4, marginTop: 10, textAlign: "center" }}
-        >
-          <Lock fontSize="large" color="primary" />
-          <Typography variant="h5" gutterBottom>
-            Register
-          </Typography>
-          {error && <Typography color="error">{error.message}</Typography>}
-
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "gray",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <Container maxWidth="sm">
+          <Paper
+            elevation={5}
+            sx={{
+              padding: 5,
+              textAlign: "center",
+              borderRadius: 3,
+              backdropFilter: "blur(8px)",
+              backgroundColor: "rgba(255, 255, 255, 0.8)",
+            }}
           >
-            <TextField
-              label="Username"
-              name="username"
-              value={username}
-              variant="outlined"
-              fullWidth
-              error={!!errors.username}
-              helperText={errors.username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-            <TextField
-              label="Password"
-              name="password"
-              value={password}
-              type="password"
-              variant="outlined"
-              fullWidth
-              error={!!errors.password}
-              helperText={errors.password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <TextField
-              label="Confirm Password"
-              name="confirm_password"
-              value={confirm_password}
-              type="password"
-              variant="outlined"
-              fullWidth
-              error={!!errors.confirm_password}
-              helperText={errors.confirm_password}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-            <Typography color="error" variant="body2">
-              {errors.passwordMatch ? errors.passwordMatch : ""}
+            <Lock fontSize="large" color="primary" />
+            <Typography variant="h5" gutterBottom>
+              Register
             </Typography>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              disabled={loading}
-              fullWidth
+            {error && <Typography color="error">{error.message}</Typography>}
+
+            <Box
+              component="form"
+              onSubmit={handleSubmit}
+              sx={{ display: "flex", flexDirection: "column", gap: 2 }}
             >
-              {loading ? "Registering..." : "Register"}
-            </Button>
-            {errors.form && (
-              <Typography color="error">{errors.form}</Typography>
-            )}
-          </Box>
-        </Paper>
-      </Container>
+              <TextField
+                label="Username"
+                name="username"
+                value={username}
+                variant="outlined"
+                fullWidth
+                error={!!errors.username}
+                helperText={errors.username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+              <TextField
+                label="Password"
+                name="password"
+                value={password}
+                type="password"
+                variant="outlined"
+                fullWidth
+                error={!!errors.password}
+                helperText={errors.password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <TextField
+                label="Confirm Password"
+                name="confirm_password"
+                value={confirm_password}
+                type="password"
+                variant="outlined"
+                fullWidth
+                error={!!errors.confirm_password}
+                helperText={errors.confirm_password}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+              <Typography color="error" variant="body2">
+                {errors.passwordMatch ? errors.passwordMatch : ""}
+              </Typography>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                disabled={loading}
+                fullWidth
+              >
+                {loading ? "Registering..." : "Register"}
+              </Button>
+              <Typography gutterBottom>
+                Already have an account? <Link to="/user/login">here</Link>.
+              </Typography>
+              {errors.form && (
+                <Typography color="error">{errors.form}</Typography>
+              )}
+            </Box>
+          </Paper>
+        </Container>
+      </Box>
     </div>
   );
 }

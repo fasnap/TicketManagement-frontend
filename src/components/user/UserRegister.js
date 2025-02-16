@@ -167,7 +167,7 @@ function UserRegister() {
               >
                 {loading ? "Registering..." : "Register"}
               </Button>
-
+              {successMessage ? successMessage : ""}
               <Typography gutterBottom>
                 Already have an account? <Link to="/user/login">here</Link>.
               </Typography>

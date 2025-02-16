@@ -6,6 +6,7 @@ import {
   Typography,
   Container,
   Paper,
+  Alert,
 } from "@mui/material";
 import { Error, Lock } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,7 +23,8 @@ function UserRegister() {
   const [errors, setErrors] = useState({});
   const user = useSelector((state) => state.auth.user);
   const [successMessage, setSuccessMessage] = useState("");
-  const { loading, error } = useSelector((state) => state.auth);
+  const { error } = useSelector((state) => state.auth);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     if (user) {
       navigate("/user/dashboard");
@@ -72,11 +74,14 @@ function UserRegister() {
       await dispatch(
         register({ username, password, confirm_password })
       ).unwrap();
+      setLoading(True);
+
       setSuccessMessage("Registration successful! Redirecting to login...");
 
       setTimeout(() => {
         navigate("/user/login");
       }, 2000);
+      setLoading(False);
     } catch (err) {
       if (err?.username) {
         setErrors({
@@ -167,7 +172,9 @@ function UserRegister() {
               >
                 {loading ? "Registering..." : "Register"}
               </Button>
-              {successMessage ? successMessage : ""}
+              {successMessage && (
+                <Alert severity="success">{successMessage}</Alert>
+              )}
               <Typography gutterBottom>
                 Already have an account? <Link to="/user/login">here</Link>.
               </Typography>

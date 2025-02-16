@@ -167,6 +167,10 @@ function UserRegister() {
               >
                 {loading ? "Registering..." : "Register"}
               </Button>
+              {successMessage && (
+                <Alert severity="success">{successMessage}</Alert>
+              )}
+
               <Typography gutterBottom>
                 Already have an account? <Link to="/user/login">here</Link>.
               </Typography>

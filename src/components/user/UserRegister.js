@@ -21,7 +21,7 @@ function UserRegister() {
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const user = useSelector((state) => state.auth.user);
-
+  const [successMessage, setSuccessMessage] = useState("");
   const { loading, error } = useSelector((state) => state.auth);
   useEffect(() => {
     if (user) {
@@ -72,7 +72,11 @@ function UserRegister() {
       await dispatch(
         register({ username, password, confirm_password })
       ).unwrap();
-      navigate("/user/login");
+      setSuccessMessage("Registration successful! Redirecting to login...");
+
+      setTimeout(() => {
+        navigate("/user/login");
+      }, 2000);
     } catch (err) {
       if (err?.username) {
         setErrors({

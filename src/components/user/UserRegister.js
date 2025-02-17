@@ -70,11 +70,11 @@ function UserRegister() {
 
     setErrors(formErrors);
     if (Object.keys(formErrors).length > 0) return;
+    setLoading(true);
     try {
       await dispatch(
         register({ username, password, confirm_password })
       ).unwrap();
-      setLoading(true);
 
       setSuccessMessage("Registration successful! Redirecting to login...");
 
@@ -91,6 +91,8 @@ function UserRegister() {
       } else {
         setErrors({ form: err?.error || "Invalid username or password" });
       }
+    } finally {
+      setLoading(false);
     }
   };
   return (

@@ -52,6 +52,7 @@ function TicketDetail() {
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [localLoading, setLocalLoading] = useState(false);
+  const [editErrors, setEditErrors] = useState({});
 
   useEffect(() => {
     dispatch(fetchSingleTicket(ticketId));
@@ -96,16 +97,38 @@ function TicketDetail() {
       [e.target.name]: e.target.value,
     });
   };
+
+  const validateEditForm = () => {
+    const newErrors = {};
+    if (!editedTicket.title.trim()) {
+      newErrors.title = "Title is required";
+    } else if (editedTicket.title.length < 4) {
+      newErrors.title = "Title must be at least 4 characters long";
+    }
+    if (!editedTicket.description.trim()) {
+      newErrors.description = "Description is required";
+    } else if (editedTicket.description.length < 10) {
+      newErrors.description = "Description must be at least 10 characters long";
+    }
+    return newErrors;
+  };
+
   const handleUpdate = async () => {
+    const formErrors = validateEditForm();
+    setEditErrors(formErrors);
+
+    if (Object.keys(formErrors).length > 0) return;
     try {
       await dispatch(
         updateTicket({ id: ticketId, ticketData: editedTicket })
       ).unwrap();
       setUpdateSuccess(true);
+      setEditErrors({});
+      setError(null);
       setOpenEdit(false);
       setTimeout(() => setUpdateSuccess(false), 2000);
     } catch (err) {
-      setError(err.message || "Failed to update ticket");
+      setEditErrors({ general: err.message || "Failed to update ticket" });
     }
   };
   const handleDelete = async () => {
@@ -200,6 +223,10 @@ function TicketDetail() {
           >
             <DialogTitle>Edit Ticket</DialogTitle>
             <DialogContent>
+              {editErrors.general && (
+                <Alert severity="error">{editErrors.general}</Alert>
+              )}
+
               <TextField
                 fullWidth
                 label="Title"
@@ -207,6 +234,8 @@ function TicketDetail() {
                 value={editedTicket?.title || ""}
                 onChange={handleChange}
                 margin="normal"
+                error={!!editErrors.title}
+                helperText={editErrors.title}
               />
               <TextField
                 fullWidth
@@ -217,6 +246,8 @@ function TicketDetail() {
                 margin="normal"
                 multiline
                 rows={4}
+                error={!!editErrors.description}
+                helperText={editErrors.description}
               />
               <FormControl fullWidth margin="normal">
                 <InputLabel>Priority</InputLabel>

@@ -74,14 +74,14 @@ function UserRegister() {
       await dispatch(
         register({ username, password, confirm_password })
       ).unwrap();
-      setLoading(True);
+      setLoading(true);
 
       setSuccessMessage("Registration successful! Redirecting to login...");
 
       setTimeout(() => {
         navigate("/user/login");
       }, 2000);
-      setLoading(False);
+      setLoading(false);
     } catch (err) {
       if (err?.username) {
         setErrors({

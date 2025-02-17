@@ -53,6 +53,10 @@ function TicketDetail() {
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [localLoading, setLocalLoading] = useState(false);
   const [editErrors, setEditErrors] = useState({});
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+  const handleOpenDeleteDialog = () => setOpenDeleteDialog(true);
+  const handleCloseDeleteDialog = () => setOpenDeleteDialog(false);
 
   useEffect(() => {
     dispatch(fetchSingleTicket(ticketId));
@@ -132,16 +136,16 @@ function TicketDetail() {
     }
   };
   const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete this ticket?")) {
-      try {
-        setLocalLoading(true);
-        await dispatch(deleteTicket(ticketId)).unwrap();
-        setDeleteSuccess(true);
-        navigate("/user/dashboard", { replace: true });
-      } catch (err) {
-        setError(err.message || "Failed to delete ticket");
-        setLocalLoading(false);
-      }
+    try {
+      setLocalLoading(true);
+      await dispatch(deleteTicket(ticketId)).unwrap();
+      setDeleteSuccess(true);
+      navigate("/user/dashboard", { replace: true });
+    } catch (err) {
+      setError(err.message || "Failed to delete ticket");
+      setLocalLoading(false);
+    } finally {
+      setOpenDeleteDialog(false);
     }
   };
 
@@ -177,7 +181,7 @@ function TicketDetail() {
                 <StyledButton
                   variant="outlined"
                   color="error"
-                  onClick={handleDelete}
+                  onClick={handleOpenDeleteDialog}
                 >
                   Delete
                 </StyledButton>
@@ -215,6 +219,8 @@ function TicketDetail() {
               {selectedTicket.priority}
             </Typography>
           </Box>
+          {/* Modal box for edit comfirmation */}
+
           <Dialog
             open={openEdit}
             onClose={handleCloseEdit}
@@ -271,6 +277,25 @@ function TicketDetail() {
                 color="primary"
               >
                 Update
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          {/* Modal box for delete comfirmation */}
+          <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogContent>
+              <Typography>
+                Are you sure you want to delete this ticket? This action cannot
+                be undone.
+              </Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDeleteDialog} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={handleDelete} variant="contained" color="error">
+                Delete
               </Button>
             </DialogActions>
           </Dialog>

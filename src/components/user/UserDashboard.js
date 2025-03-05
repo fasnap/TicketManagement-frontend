@@ -29,9 +29,12 @@ function UserDashboard() {
   useEffect(() => {
     if (!user) {
       navigate("/user/login");
+      return;
     }
-    dispatch(fetchTickets(filters));
-  }, [user, dispatch, navigate, filters]);
+    if (tickets.length === 0) {
+      dispatch(fetchTickets(filters));
+    }
+  }, [user, dispatch, navigate, tickets.length, filters]);
 
   const handleFilterChange = (e) => {
     setFilters({

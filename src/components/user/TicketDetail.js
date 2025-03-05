@@ -59,8 +59,10 @@ function TicketDetail() {
   const handleCloseDeleteDialog = () => setOpenDeleteDialog(false);
 
   useEffect(() => {
-    dispatch(fetchSingleTicket(ticketId));
-  }, [ticketId, dispatch]);
+    if (!selectedTicket || selectedTicket.id !== parseInt(ticketId)) {
+      dispatch(fetchSingleTicket(ticketId));
+    }
+  }, [ticketId, dispatch, selectedTicket]);
 
   useEffect(() => {
     if (selectedTicket) {

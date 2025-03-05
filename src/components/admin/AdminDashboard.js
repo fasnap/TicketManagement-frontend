@@ -39,8 +39,10 @@ function AdminDashboard() {
       navigate("/admin/login");
       return;
     }
-    dispatch(fetchTickets(filters));
-  }, [user, dispatch, navigate, filters]);
+    if (tickets.length === 0) {
+      dispatch(fetchTickets(filters));
+    }
+  }, [user, dispatch, navigate, tickets.length, filters]);
 
   const handleViewTicket = (ticketId) => {
     navigate(`/admin/ticket/${ticketId}`);
@@ -117,7 +119,6 @@ function AdminDashboard() {
                   </TableCell>
                 </TableRow>
               ) : (
-                
                 tickets.map((ticket) => (
                   <TableRow key={ticket.id}>
                     <TableCell>{ticket.title}</TableCell>

@@ -38,6 +38,7 @@ function UserLogin() {
     }
     try {
       const result = await dispatch(login({ username, password })).unwrap();
+      console.log(result);
       if (result?.access) {
         navigate("/"); // Redirect only if login is successful
       }

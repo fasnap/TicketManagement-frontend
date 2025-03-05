@@ -12,6 +12,7 @@ import { Error, Lock } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { login, register } from "../../api/auth";
+import * as yup from "yup";
 
 function UserRegister() {
   const [username, setUsername] = useState("");
@@ -31,65 +32,55 @@ function UserRegister() {
     }
   }, [user, navigate]);
 
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!username.trim()) {
-      newErrors.username = "Username is required";
-    } else if (username.length < 4) {
-      newErrors.username = "Username must be at least 4 characters long";
-    } else if (!/^[a-zA-Z]+$/.test(username)) {
-      newErrors.username = "Username must contain only letters";
-    }
-
-    if (!password.trim()) {
-      newErrors.password = "Password is required";
-    } else if (password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters long";
-    } else if (!/[A-Z]/.test(password)) {
-      newErrors.password =
-        "Password must contain at least one uppercase letter";
-    } else if (!/[a-z]/.test(password)) {
-      newErrors.password =
-        "Password must contain at least one lowercase letter";
-    } else if (!/[0-9]/.test(password)) {
-      newErrors.password = "Password must contain at least one number";
-    } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      newErrors.password =
-        "Password must contain at least one special character";
-    }
-    if (password !== confirm_password) {
-      newErrors.passwordMatch = "Passwords do not match"; // Set error if passwords don't match
-    }
-    return newErrors;
-  };
+  const validationSchema = yup.object().shape({
+    username: yup
+      .string()
+      .required("Username is required")
+      .min(4, "Username must be at least 4 characters")
+      .matches(/^[a-zA-Z]+$/, "Username must contain only letters"),
+    password: yup
+      .string()
+      .required("Password is required")
+      .min(6, "Password must be at least 6 characters")
+      .matches(/[A-Z]/, "Password must have at least one uppercase letter")
+      .matches(/[a-z]/, "Password must have at least one lowercase letter")
+      .matches(/[0-9]/, "Password must have at least one number")
+      .matches(
+        /[!@#$%^&*(),.?":{}|<>]/,
+        "Password must have at least one special character"
+      ),
+    confirm_password: yup
+      .string()
+      .oneOf([yup.ref("password"), null], "Passwords do not match")
+      .required("Confirm Password is required"),
+  });
 
   const handleSubmit = async (e) => {
+    console.log("submit clicked");
     e.preventDefault();
-    const formErrors = validateForm();
-
-    setErrors(formErrors);
-    if (Object.keys(formErrors).length > 0) return;
-    setLoading(true);
     try {
+      await validationSchema.validate(
+        { username, password, confirm_password },
+        { abortEarly: false }
+      );
+      console.log("validated");
+      setErrors({});
+      setLoading(true);
+      console.log("before dispatching","username", username,"password", password);
       await dispatch(
         register({ username, password, confirm_password })
       ).unwrap();
-
+         
       setSuccessMessage("Registration successful! Redirecting to login...");
-
-      setTimeout(() => {
-        navigate("/user/login");
-      }, 2000);
-      setLoading(false);
+      setTimeout(() => navigate("/user/login"), 2000);
     } catch (err) {
-      if (err?.username) {
-        setErrors({
-          username: err?.username || "An error occurred",
-          form: err?.error?.message,
-        });
-      } else {
-        setErrors({ form: err?.error || "Invalid username or password" });
+      console.log("error", err);
+      if (err) {
+        setErrors(err);
+      } else if (err.response && err.response.data) {
+        setErrors(err.response.data);
+      } else if (err.message) {
+        setErrors({ server: err.message });
       }
     } finally {
       setLoading(false);
@@ -177,12 +168,11 @@ function UserRegister() {
               {successMessage && (
                 <Alert severity="success">{successMessage}</Alert>
               )}
+              {errors.server && <Alert severity="error">{errors.server}</Alert>}
+
               <Typography gutterBottom>
                 Already have an account? <Link to="/user/login">here</Link>.
               </Typography>
-              {errors.form && (
-                <Typography color="error">{errors.form}</Typography>
-              )}
             </Box>
           </Paper>
         </Container>

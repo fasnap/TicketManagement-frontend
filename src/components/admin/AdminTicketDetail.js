@@ -37,8 +37,10 @@ function AdminTicketDetail() {
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [error, setError] = useState(null);
   useEffect(() => {
-    dispatch(fetchSingleTicket(ticketId));
-  }, [ticketId, dispatch]);
+    if (!selectedTicket || selectedTicket.id !== parseInt(ticketId)) {
+      dispatch(fetchSingleTicket(ticketId));
+    }
+  }, [ticketId, dispatch, selectedTicket]);
   useEffect(() => {
     if (selectedTicket) {
       setEditedTicket({
@@ -128,7 +130,7 @@ function AdminTicketDetail() {
                 onClick={handleOpenEdit}
                 sx={{ mr: 2 }}
               >
-                Edit
+                Update Status
               </Button>
               <Button variant="outlined" color="error" onClick={handleDelete}>
                 Delete
@@ -170,26 +172,8 @@ function AdminTicketDetail() {
             maxWidth="sm"
             fullWidth
           >
-            <DialogTitle>Edit Ticket</DialogTitle>
+            <DialogTitle>Update Status</DialogTitle>
             <DialogContent>
-              <TextField
-                fullWidth
-                label="Title"
-                name="title"
-                value={editedTicket?.title || ""}
-                onChange={handleChange}
-                margin="normal"
-              />
-              <TextField
-                fullWidth
-                label="Description"
-                name="description"
-                value={editedTicket?.description || ""}
-                onChange={handleChange}
-                margin="normal"
-                multiline
-                rows={4}
-              />
               <FormControl fullWidth margin="normal">
                 <InputLabel>Status</InputLabel>
                 <Select
@@ -201,19 +185,6 @@ function AdminTicketDetail() {
                   <MenuItem value="open">Open</MenuItem>
                   <MenuItem value="in_progress">In Progress</MenuItem>
                   <MenuItem value="resolved">Resolved</MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl fullWidth margin="normal">
-                <InputLabel>Priority</InputLabel>
-                <Select
-                  name="priority"
-                  value={editedTicket?.priority || ""}
-                  onChange={handleChange}
-                  label="Priority"
-                >
-                  <MenuItem value="low">Low</MenuItem>
-                  <MenuItem value="medium">Medium</MenuItem>
-                  <MenuItem value="high">High</MenuItem>
                 </Select>
               </FormControl>
             </DialogContent>
